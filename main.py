@@ -148,6 +148,37 @@ def model_v2_0():
         print(e)
         return jsonify({"error": "Invalid JSON data"}), 400
 
+@app.route('/api/stats/v2/<string:column>/<int:bins>', methods=['GET'])
+def get_stats_plot_v_2_0(column,bins):
+    try:
+        # Get the filter parameters from the query string
+        attrition_filter = request.args.get('Attrition')
+        department_filter = request.args.get('Department')
+        job_role_filter = request.args.get('JobRole')
+
+        # Apply filters based on the query parameters
+        filtered_data = df_v2_0  # Assuming df_v1_0 is your original DataFrame
+
+        if attrition_filter:
+            filtered_data = filtered_data[filtered_data['Attrition'] == attrition_filter]
+        if department_filter:
+            filtered_data = filtered_data[filtered_data['Department'] == department_filter]
+        if job_role_filter:
+            filtered_data = filtered_data[filtered_data['JobRole'] == job_role_filter]
+
+        # Create a histogram of the "Age" column
+        counts, bins, _ = plt.hist(filtered_data[column], bins=bins, edgecolor='black')  # You can adjust the number of bins as needed
+
+        # Prepare the data in a JSON-friendly format
+        histogram_data = {
+            "labels": [f"{int(bins[i])}-{int(bins[i+1])}" for i in range(len(bins) - 1)],
+            "data": counts.tolist()
+        }
+
+        return jsonify({"stats": histogram_data})
+    except Exception as e:
+        return jsonify({"error": str(e)})
+
 
 ##########################################################################################
 ################################### Model Version 3.0 ####################################
@@ -189,6 +220,37 @@ def model_v3_0():
     except Exception as e:
         print(e)
         return jsonify({"error": "Invalid JSON data"}), 400
+
+@app.route('/api/stats/v3/<string:column>/<int:bins>', methods=['GET'])
+def get_stats_plot_v_3_0(column,bins):
+    try:
+        # Get the filter parameters from the query string
+        attrition_filter = request.args.get('Attrition')
+        department_filter = request.args.get('Department')
+        job_role_filter = request.args.get('JobRole')
+
+        # Apply filters based on the query parameters
+        filtered_data = df_v3_0  # Assuming df_v1_0 is your original DataFrame
+
+        if attrition_filter:
+            filtered_data = filtered_data[filtered_data['Attrition'] == attrition_filter]
+        if department_filter:
+            filtered_data = filtered_data[filtered_data['Department'] == department_filter]
+        if job_role_filter:
+            filtered_data = filtered_data[filtered_data['JobRole'] == job_role_filter]
+
+        # Create a histogram of the "Age" column
+        counts, bins, _ = plt.hist(filtered_data[column], bins=bins, edgecolor='black')  # You can adjust the number of bins as needed
+
+        # Prepare the data in a JSON-friendly format
+        histogram_data = {
+            "labels": [f"{int(bins[i])}-{int(bins[i+1])}" for i in range(len(bins) - 1)],
+            "data": counts.tolist()
+        }
+
+        return jsonify({"stats": histogram_data})
+    except Exception as e:
+        return jsonify({"error": str(e)})
 
 
 if __name__ == '__main__':
